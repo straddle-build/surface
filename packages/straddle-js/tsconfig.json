@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["bun"],
+    "noEmit": true
+  },
+  "include": ["."],
+  // The React JSX entry is opt-in for consumers, so it is kept out of the main
+  // program too — tsconfig.react.json checks it (and that it is opt-in).
+  "exclude": [
+    "node_modules",
+    "dist",
+    "types/react.d.ts",
+    "types/react.type-test.tsx"
+  ]
+}

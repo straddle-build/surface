@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>stub iframe app</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 1rem;
+      }
+      button {
+        margin-right: 0.5rem;
+      }
+      /* Fixed height so updating the hint text never changes body height — keeps
+         the HEIGHT/RESIZE round-trip from oscillating. */
+      #resize-hint {
+        min-height: 1.2em;
+        color: #6b7280;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Embedded surface (stub)</h2>
+    <p id="status">waiting for STRADDLE_INIT…</p>
+    <p id="resize-hint">no STRADDLE_RESIZE yet</p>
+    <button id="complete">Complete</button>
+    <button id="exit">Exit</button>
+    <button id="error">Error</button>
+    <button id="grow">Toggle extra content</button>
+    <div id="extra"></div>
+    <script type="module" src="/iframe-app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2022",
+    "declaration": true
+  },
+  "exclude": ["node_modules", "dist"]
+}

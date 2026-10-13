@@ -1,0 +1,78 @@
+name: publish
+
+on:
+  workflow_call:
+    inputs:
+      package:
+        description: Package directory (e.g. packages/runtime-core)
+        required: true
+        type: string
+      dry-run:
+        description: Pack and validate without publishing
+        required: false
+        default: false
+        type: boolean
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package directory
+        required: true
+        type: choice
+        options:
+          - packages/runtime-core
+          - packages/runtime-surface
+          - packages/runtime-client
+          - packages/straddle-js
+          - packages/surface-contracts
+      dry-run:
+        description: Pack and validate without publishing
+        required: false
+        default: true
+        type: boolean
+
+permissions: {}
+
+concurrency:
+  group: publish-${{ inputs.package }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4.3.1
+        with:
+          persist-credentials: false
+
+      - uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version-file: package.json
+          no-cache: true
+
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Format check
+        run: bun run format:check
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Test
+        run: bun run test
+
+      - name: Rewrite manifest for publish
+        working-directory: ${{ inputs.package }}
+        run: bun ../../scripts/publish-manifest.ts strip
+
+      - name: Publish ${{ inputs.package }}
+        working-directory: ${{ inputs.package }}
+        run: npm publish ${{ inputs.dry-run && '--dry-run' || '' }}

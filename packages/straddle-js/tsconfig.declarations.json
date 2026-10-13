@@ -1,0 +1,19 @@
+{
+  // Compiles the SHIPPED declarations the way a consumer's compiler does:
+  // Node resolution (not `bundler`) and skipLibCheck OFF, so errors *inside*
+  // our .d.ts files are surfaced instead of silently resolving to `any`.
+  // The main programs resolve as `bundler` with skipLibCheck on (inherited),
+  // which cannot see extensionless relative specifiers or other node16-only
+  // declaration faults. Wired into `typecheck` so CI fails on them.
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "skipLibCheck": false,
+    "types": []
+  },
+  "include": ["types/index.d.ts", "types/react.d.ts"]
+}

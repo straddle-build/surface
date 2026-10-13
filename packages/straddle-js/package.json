@@ -1,0 +1,54 @@
+{
+  "name": "@straddlecom/straddle-js",
+  "version": "0.3.0",
+  "description": "Straddle's merchant-facing widgets for payments and bank account connection, as a standalone Web Component bundle.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/straddle-build/surface.git",
+    "directory": "packages/straddle-js"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./straddle.js": "./dist/straddle.js",
+    "./react": {
+      "types": "./types/react.d.ts",
+      "default": "./dist/react.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "react": [
+        "types/react.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "types/index.d.ts",
+    "types/react.d.ts"
+  ],
+  "sideEffects": true,
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.react.json && tsc --noEmit -p tsconfig.declarations.json",
+    "test": "bun test",
+    "build": "bun run build.ts",
+    "prepack": "bun run build"
+  },
+  "devDependencies": {
+    "@straddlecom/runtime-client": "workspace:*",
+    "@straddlecom/runtime-core": "workspace:*",
+    "@straddlecom/surface-contracts": "workspace:*",
+    "@types/react": "^19.2.18"
+  }
+}

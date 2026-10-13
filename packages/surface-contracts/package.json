@@ -1,0 +1,29 @@
+{
+  "name": "@straddlecom/surface-contracts",
+  "version": "0.4.0",
+  "description": "Internal to Straddle's SDKs, not for direct use. Per-surface init-option vocabularies shared by a Straddle element and the surface app it hosts.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/straddle-build/surface.git",
+    "directory": "packages/surface-contracts"
+  },
+  "type": "module",
+  "exports": {
+    "./bridge": "./src/bridge.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "prepack": "bun ../../scripts/publish-manifest.ts assert && bun run build"
+  }
+}

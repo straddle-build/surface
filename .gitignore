@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+package.json.orig
+
+# Bun
+*.lockb
+!bun.lock
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude
+.claude/
+.superpowers/
+
+# Local working docs
+docs/superpowers/
+docs/design/
+
+# Git worktrees
+.worktrees
+
+# Environment
+.env
+.env.*
+!.env.example

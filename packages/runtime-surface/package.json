@@ -1,0 +1,34 @@
+{
+  "name": "@straddlecom/runtime-surface",
+  "version": "0.2.0",
+  "description": "Internal to Straddle's SDKs, not for direct use. Surface-side runtime: iframe handshake and lifecycle.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/straddle-build/surface.git",
+    "directory": "packages/runtime-surface"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "prepack": "bun ../../scripts/publish-manifest.ts assert && bun run build"
+  },
+  "dependencies": {
+    "@straddlecom/runtime-core": "workspace:^"
+  }
+}

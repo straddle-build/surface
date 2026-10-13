@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>runtime-client demo — parent</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 2rem;
+      }
+      straddle-demo {
+        display: block;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      #log {
+        white-space: pre-wrap;
+        background: #f4f4f5;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Parent page</h1>
+    <straddle-demo token="dev-token-abc"></straddle-demo>
+    <h2>Lifecycle log</h2>
+    <div id="log"></div>
+    <script type="module" src="/demo-element.js"></script>
+    <script>
+      const log = (m) =>
+        (document.getElementById('log').textContent += m + '\n')
+      const el = document.querySelector('straddle-demo')
+      for (const ev of [
+        'straddleready',
+        'straddlecomplete',
+        'straddleexit',
+        'straddleerror',
+      ]) {
+        el.addEventListener(ev, (e) =>
+          log(ev + ' ' + JSON.stringify(e.detail ?? {})),
+        )
+      }
+    </script>
+  </body>
+</html>

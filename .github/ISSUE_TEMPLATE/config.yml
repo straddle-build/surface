@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Integration help
+    url: https://help.straddle.com
+    about: For help with your integration or your Straddle account, see the help center or email support@straddle.com.
+  - name: Documentation
+    url: https://docs.straddle.com
+    about: API reference and integration guides.
+  - name: Report a security vulnerability
+    url: https://github.com/straddle-build/surface/security/policy
+    about: Report vulnerabilities privately instead of opening a public issue.
