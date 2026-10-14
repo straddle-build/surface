@@ -10,7 +10,6 @@
     "format:check": "prettier --check .",
     "typecheck": "bun run --filter '*' typecheck && tsc --noEmit -p scripts/tsconfig.json",
     "test": "bun run --filter '*' test && bun test scripts/",
-    "dev:examples": "bun run examples/embedded-iframe/serve.ts",
     "dev:straddle-js": "bun run examples/straddle-js/serve.ts"
   },
   "devDependencies": {

@@ -98,7 +98,7 @@ describe('publishedExports', () => {
 describe('rewriteWorkspaceDeps', () => {
   test('maps workspace protocol aliases onto the released version', () => {
     const manifest = {
-      name: '@straddlecom/runtime-surface',
+      name: '@straddlecom/example',
       version: '0.1.0',
       dependencies: {
         '@straddlecom/runtime-core': 'workspace:^',
@@ -112,7 +112,7 @@ describe('rewriteWorkspaceDeps', () => {
       },
     }
     expect(rewriteWorkspaceDeps(manifest, VERSIONS)).toEqual({
-      name: '@straddlecom/runtime-surface',
+      name: '@straddlecom/example',
       version: '0.1.0',
       dependencies: {
         '@straddlecom/runtime-core': '^0.1.0',

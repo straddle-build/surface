@@ -13,25 +13,18 @@
     },
     "packages/runtime-client": {
       "name": "@straddlecom/runtime-client",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dependencies": {
         "@straddlecom/runtime-core": "workspace:^",
       },
     },
     "packages/runtime-core": {
       "name": "@straddlecom/runtime-core",
-      "version": "0.2.0",
-    },
-    "packages/runtime-surface": {
-      "name": "@straddlecom/runtime-surface",
-      "version": "0.2.0",
-      "dependencies": {
-        "@straddlecom/runtime-core": "workspace:^",
-      },
+      "version": "0.2.1",
     },
     "packages/straddle-js": {
       "name": "@straddlecom/straddle-js",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "devDependencies": {
         "@straddlecom/runtime-client": "workspace:*",
         "@straddlecom/runtime-core": "workspace:*",
@@ -41,7 +34,7 @@
     },
     "packages/surface-contracts": {
       "name": "@straddlecom/surface-contracts",
-      "version": "0.4.0",
+      "version": "0.4.1",
     },
   },
   "packages": {
@@ -50,8 +43,6 @@
     "@straddlecom/runtime-client": ["@straddlecom/runtime-client@workspace:packages/runtime-client"],
 
     "@straddlecom/runtime-core": ["@straddlecom/runtime-core@workspace:packages/runtime-core"],
-
-    "@straddlecom/runtime-surface": ["@straddlecom/runtime-surface@workspace:packages/runtime-surface"],
 
     "@straddlecom/straddle-js": ["@straddlecom/straddle-js@workspace:packages/straddle-js"],
 

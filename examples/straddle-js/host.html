@@ -2,14 +2,18 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>straddle-js demo — host page</title>
+    <title>straddle-js demo</title>
     <style>
       body {
         font-family: system-ui, sans-serif;
         margin: 2rem;
       }
+      #token {
+        width: 32rem;
+        max-width: 100%;
+      }
       straddle-bridge {
-        display: block;
+        margin-top: 1rem;
         border: 1px solid #ddd;
         border-radius: 8px;
       }
@@ -23,39 +27,43 @@
     </style>
   </head>
   <body>
-    <h1>Host page</h1>
+    <h1>straddle-js demo</h1>
     <p>
-      A partner loads the published <code>straddle.js</code> bundle and drops in
-      the <code>&lt;straddle-bridge&gt;</code> element — no build step, no
-      subclass. The element mounts the surface at the fixed
-      <code>/bridge</code> route on <code>iframe-origin</code>.
+      Paste a sandbox session token, the <code>client_secret</code> your backend
+      gets from <code>POST /v1/bridge/sessions</code>, and mount
+      <code>&lt;straddle-bridge&gt;</code>.
     </p>
-
-    <!-- The standalone IIFE bundle. Loading it self-registers the element. -->
-    <script src="/straddle.js"></script>
-
-    <straddle-bridge
-      iframe-origin="http://localhost:5374"
-      token="dev-token-abc"
-    ></straddle-bridge>
+    <form id="mount">
+      <input id="token" placeholder="Sandbox session token" required />
+      <button>Mount</button>
+    </form>
+    <div id="slot"></div>
 
     <h2>Lifecycle log</h2>
     <div id="log"></div>
 
+    <script src="/straddle.js"></script>
     <script>
       const log = (m) =>
         (document.getElementById('log').textContent += m + '\n')
-      const el = document.querySelector('straddle-bridge')
-      for (const ev of [
-        'straddleready',
-        'straddlecomplete',
-        'straddleexit',
-        'straddleerror',
-      ]) {
-        el.addEventListener(ev, (e) =>
-          log(ev + ' ' + JSON.stringify(e.detail ?? {})),
-        )
-      }
+
+      document.getElementById('mount').addEventListener('submit', (e) => {
+        e.preventDefault()
+        const el = document.createElement('straddle-bridge')
+        el.setAttribute('mode', 'sandbox')
+        el.setAttribute('token', document.getElementById('token').value.trim())
+        for (const ev of [
+          'straddleready',
+          'straddlecomplete',
+          'straddleexit',
+          'straddleerror',
+        ]) {
+          el.addEventListener(ev, (e) =>
+            log(ev + ' ' + JSON.stringify(e.detail ?? {})),
+          )
+        }
+        document.getElementById('slot').replaceChildren(el)
+      })
     </script>
   </body>
 </html>

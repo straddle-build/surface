@@ -110,7 +110,6 @@ straddle-js bundles the ones it needs, so you never install them:
 | -------------------------------------------------------------- | ------------------------------------------------------------ |
 | [`@straddlecom/runtime-core`](packages/runtime-core)           | The `postMessage` protocol between a page and a surface app. |
 | [`@straddlecom/runtime-client`](packages/runtime-client)       | The page side: iframe lifecycle and the element base class.  |
-| [`@straddlecom/runtime-surface`](packages/runtime-surface)     | The iframe side: the handshake for Straddle's hosted apps.   |
 | [`@straddlecom/surface-contracts`](packages/surface-contracts) | The options each element sends to its surface app.           |
 
 ## Support and contributing

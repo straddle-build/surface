@@ -86,9 +86,8 @@ What it does on `connectedCallback`:
    different protocol version is detected from its HELLO and reported as
    `straddleerror` (`code: "VERSION_MISMATCH"`) instead.
 
-The counterpart: the page at `iframeOrigin` must run `createSurfaceRuntime`
-from [`@straddlecom/runtime-surface`](../runtime-surface) at boot to complete
-the handshake.
+The counterpart: the page at `iframeOrigin` must run Straddle's iframe-side
+runtime at boot to complete the handshake.
 
 ### Known limitation: token reuse on iframe reload
 
@@ -186,8 +185,7 @@ bun run test       # bun test (DOM provided via happy-dom preload)
 ```
 
 Tests run against [happy-dom](https://github.com/capricorn86/happy-dom) — see
-`bunfig.toml` and `happy-dom.preload.ts`. For a runnable two-origin demo of the
-full handshake, see [`examples/embedded-iframe`](../../examples/embedded-iframe).
+`bunfig.toml` and `happy-dom.preload.ts`.
 
 Source layout:
 

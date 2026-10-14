@@ -1,6 +1,6 @@
 {
   "name": "@straddlecom/straddle-js",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Straddle's merchant-facing widgets for payments and bank account connection, as a standalone Web Component bundle.",
   "license": "Apache-2.0",
   "repository": {

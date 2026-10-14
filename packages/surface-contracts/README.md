@@ -8,9 +8,8 @@ is deliberately no root entry, so a consumer names the surface it speaks to.
 > Integrate with [`@straddlecom/straddle-js`](../straddle-js) instead. It
 > publishes `restricted` with `0.x` versioning and holds pure types plus the
 > const arrays runtime validation needs, with no behavior and no runtime
-> imports. The generic runtime packages (`runtime-core`, `runtime-client`,
-> `runtime-surface`) never import it; only concrete elements and surface apps
-> do.
+> imports. The generic runtime packages never import it; only concrete
+> elements and surface apps do.
 
 ## Entries
 
@@ -33,25 +32,8 @@ class StraddleBridgeElement extends StraddleComponentElement<BridgeInitOptions> 
 }
 ```
 
-Surface side — the app pins its runtime to the same contract and validates
-enum-like values with `readInitOption`, whose throw becomes `STRADDLE_ERROR`:
-
-```ts
-import {
-  createSurfaceRuntime,
-  readInitOption,
-} from '@straddlecom/runtime-surface'
-import { BRIDGE_OAUTH_MODES } from '@straddlecom/surface-contracts/bridge'
-import type { BridgeInitOptions } from '@straddlecom/surface-contracts/bridge'
-
-createSurfaceRuntime<BridgeInitOptions>({
-  allowedParentOrigins: ['https://partner.example'],
-  onInit(token, options) {
-    const mode =
-      readInitOption(options, 'oauth_mode', BRIDGE_OAUTH_MODES) ?? 'popup'
-  },
-})
-```
+Surface side: Straddle's hosted surface app imports the same contract to type
+and validate the options it receives.
 
 A rename in a contract now fails both builds instead of drifting silently on
 the wire.

@@ -1,7 +1,6 @@
 {
   "name": "@straddlecom/runtime-core",
-  "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Internal to Straddle's SDKs, not for direct use. Shared surface runtime: postMessage protocol contract.",
   "license": "Apache-2.0",
   "repository": {
@@ -22,6 +21,9 @@
     "dist"
   ],
   "sideEffects": false,
+  "publishConfig": {
+    "access": "restricted"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "bun test",
