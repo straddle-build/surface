@@ -1,5 +1,6 @@
 {
   "name": "@straddlecom/runtime-surface",
+  "private": true,
   "version": "0.2.0",
   "description": "Internal to Straddle's SDKs, not for direct use. Surface-side runtime: iframe handshake and lifecycle.",
   "license": "Apache-2.0",
@@ -19,9 +20,6 @@
     "dist"
   ],
   "sideEffects": false,
-  "publishConfig": {
-    "access": "restricted"
-  },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "bun test",
