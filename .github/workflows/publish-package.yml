@@ -34,6 +34,12 @@ jobs:
         run: |
           name=$(jq -r .name package.json)
           version=$(jq -r .version package.json)
+          case "$version" in
+            *-*)
+              echo "::error::$name@$version is a prerelease, and this repository publishes stable versions only"
+              exit 1
+              ;;
+          esac
           published=$(npm view "$name" versions --json | jq --arg v "$version" '[.] | flatten | any(.[]; . == $v)')
           {
             echo "name=$name"
