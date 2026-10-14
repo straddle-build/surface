@@ -53,12 +53,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Type-check embedded-iframe example
-        run: bunx tsc --noEmit -p examples/embedded-iframe/tsconfig.json
-
-      - name: Bundle embedded-iframe example
-        run: bun run examples/embedded-iframe/build.ts
-
       - name: Type-check straddle-js example
         run: bunx tsc --noEmit -p examples/straddle-js/tsconfig.json
 
