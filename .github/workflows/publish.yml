@@ -12,126 +12,16 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  check:
-    if: ${{ vars.NPM_PUBLISH_ENABLED == 'true' }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-      published: ${{ steps.version.outputs.published }}
-    steps:
-      - uses: actions/checkout@v4.3.1
-        with:
-          persist-credentials: false
-
-      - name: Check whether this version is on npm
-        id: version
-        working-directory: packages/straddle-js
-        run: |
-          version=$(jq -r .version package.json)
-          published=$(npm view @straddlecom/straddle-js versions --json | jq --arg v "$version" 'any(.[]; . == $v)')
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "published=$published" >> "$GITHUB_OUTPUT"
-
-  build:
-    needs: check
-    if: ${{ needs.check.outputs.published == 'false' }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    outputs:
-      sri-umd: ${{ steps.sri.outputs.umd }}
-      sri-esm: ${{ steps.sri.outputs.esm }}
-    env:
-      TARBALL: straddlecom-straddle-js-${{ needs.check.outputs.version }}.tgz
-    steps:
-      - uses: actions/checkout@v4.3.1
-        with:
-          persist-credentials: false
-
-      - uses: oven-sh/setup-bun@v2.2.0
-        with:
-          bun-version-file: package.json
-          no-cache: true
-
-      - uses: actions/setup-node@v7.0.0
-        with:
-          node-version: 24
-          package-manager-cache: false
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Format check
-        run: bun run format:check
-
-      - name: Typecheck
-        run: bun run typecheck
-
-      - name: Test
-        run: bun run test
-
-      - name: Rewrite manifest for publish
-        working-directory: packages/straddle-js
-        run: bun ../../scripts/publish-manifest.ts strip
-
-      - name: Pack
-        working-directory: packages/straddle-js
-        run: npm pack --pack-destination "$RUNNER_TEMP"
-
-      - name: Compute SRI hashes
-        id: sri
-        run: |
-          mkdir "$RUNNER_TEMP/unpacked"
-          tar -xzf "$RUNNER_TEMP/$TARBALL" -C "$RUNNER_TEMP/unpacked"
-          echo "umd=sha384-$(openssl dgst -sha384 -binary "$RUNNER_TEMP/unpacked/package/dist/straddle.js" | openssl base64 -A)" >> "$GITHUB_OUTPUT"
-          echo "esm=sha384-$(openssl dgst -sha384 -binary "$RUNNER_TEMP/unpacked/package/dist/index.js" | openssl base64 -A)" >> "$GITHUB_OUTPUT"
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: straddle-js-tarball
-          path: ${{ runner.temp }}/${{ env.TARBALL }}
-          if-no-files-found: error
-
   publish:
-    needs: [check, build]
-    runs-on: ubuntu-latest
-    environment: npm
-    permissions:
-      id-token: write
-    steps:
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          name: straddle-js-tarball
-
-      - uses: actions/setup-node@v7.0.0
-        with:
-          node-version: 24
-          package-manager-cache: false
-
-      - name: Publish
-        env:
-          TARBALL: straddlecom-straddle-js-${{ needs.check.outputs.version }}.tgz
-        run: npm publish "$TARBALL"
-
-  release:
-    needs: [check, build, publish]
-    runs-on: ubuntu-latest
+    if: ${{ vars.NPM_PUBLISH_ENABLED == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - packages/straddle-js
     permissions:
       contents: write
-    steps:
-      - name: Create the GitHub release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          VERSION: ${{ needs.check.outputs.version }}
-          SRI_UMD: ${{ needs.build.outputs.sri-umd }}
-          SRI_ESM: ${{ needs.build.outputs.sri-esm }}
-        run: |
-          gh release create "v$VERSION" --target "$GITHUB_SHA" --title "Release $VERSION" --notes "Published \`@straddlecom/straddle-js@$VERSION\` to npm.
-
-          | File | SRI hash |
-          | --- | --- |
-          | \`dist/straddle.js\` | \`$SRI_UMD\` |
-          | \`dist/index.js\` | \`$SRI_ESM\` |"
+      id-token: write
+    uses: $/.github/workflows/publish-package.yml
+    with:
+      package: ${{ matrix.package }}
