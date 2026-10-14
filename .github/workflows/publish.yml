@@ -1,47 +1,49 @@
 name: publish
 
 on:
-  workflow_call:
-    inputs:
-      package:
-        description: Package directory (e.g. packages/runtime-core)
-        required: true
-        type: string
-      dry-run:
-        description: Pack and validate without publishing
-        required: false
-        default: false
-        type: boolean
-  workflow_dispatch:
-    inputs:
-      package:
-        description: Package directory
-        required: true
-        type: choice
-        options:
-          - packages/runtime-core
-          - packages/runtime-surface
-          - packages/runtime-client
-          - packages/straddle-js
-          - packages/surface-contracts
-      dry-run:
-        description: Pack and validate without publishing
-        required: false
-        default: true
-        type: boolean
+  push:
+    branches:
+      - main
 
 permissions: {}
 
 concurrency:
-  group: publish-${{ inputs.package }}
+  group: publish
   cancel-in-progress: false
 
 jobs:
+  check:
+    if: ${{ vars.NPM_PUBLISH_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      published: ${{ steps.version.outputs.published }}
+    steps:
+      - uses: actions/checkout@v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Check whether this version is on npm
+        id: version
+        working-directory: packages/straddle-js
+        run: |
+          version=$(jq -r .version package.json)
+          published=$(npm view @straddlecom/straddle-js versions --json | jq --arg v "$version" 'any(.[]; . == $v)')
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "published=$published" >> "$GITHUB_OUTPUT"
+
   publish:
+    needs: check
+    if: ${{ needs.check.outputs.published == 'false' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
+    outputs:
+      sri-umd: ${{ steps.sri.outputs.umd }}
+      sri-esm: ${{ steps.sri.outputs.esm }}
     steps:
       - uses: actions/checkout@v4.3.1
         with:
@@ -70,9 +72,37 @@ jobs:
         run: bun run test
 
       - name: Rewrite manifest for publish
-        working-directory: ${{ inputs.package }}
+        working-directory: packages/straddle-js
         run: bun ../../scripts/publish-manifest.ts strip
 
-      - name: Publish ${{ inputs.package }}
-        working-directory: ${{ inputs.package }}
-        run: npm publish ${{ inputs.dry-run && '--dry-run' || '' }}
+      - name: Publish
+        working-directory: packages/straddle-js
+        run: npm publish
+
+      - name: Compute SRI hashes
+        id: sri
+        working-directory: packages/straddle-js
+        run: |
+          echo "umd=sha384-$(openssl dgst -sha384 -binary dist/straddle.js | openssl base64 -A)" >> "$GITHUB_OUTPUT"
+          echo "esm=sha384-$(openssl dgst -sha384 -binary dist/index.js | openssl base64 -A)" >> "$GITHUB_OUTPUT"
+
+  release:
+    needs: [check, publish]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.check.outputs.version }}
+          SRI_UMD: ${{ needs.publish.outputs.sri-umd }}
+          SRI_ESM: ${{ needs.publish.outputs.sri-esm }}
+        run: |
+          gh release create "v$VERSION" --target "$GITHUB_SHA" --title "Release $VERSION" --notes "Published \`@straddlecom/straddle-js@$VERSION\` to npm.
+
+          | File | SRI hash |
+          | --- | --- |
+          | \`dist/straddle.js\` | \`$SRI_UMD\` |
+          | \`dist/index.js\` | \`$SRI_ESM\` |"

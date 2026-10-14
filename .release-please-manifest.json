@@ -1,7 +1,0 @@
-{
-  "packages/runtime-core": "0.2.0",
-  "packages/runtime-surface": "0.2.0",
-  "packages/runtime-client": "0.2.0",
-  "packages/straddle-js": "0.3.0",
-  "packages/surface-contracts": "0.4.0"
-}

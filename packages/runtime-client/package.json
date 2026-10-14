@@ -1,5 +1,6 @@
 {
   "name": "@straddlecom/runtime-client",
+  "private": true,
   "version": "0.2.0",
   "description": "Internal to Straddle's SDKs, not for direct use. Parent-side surface runtime: iframe lifecycle and Web Component base.",
   "license": "Apache-2.0",
@@ -19,9 +20,6 @@
     "dist"
   ],
   "sideEffects": false,
-  "publishConfig": {
-    "access": "restricted"
-  },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "bun test",
