@@ -151,27 +151,24 @@ Bridge app, which starts the handshake at boot. The element never messages first
 ## Loading from the CDN
 
 Straddle hosts the bundle, so you can load it with a script tag instead of
-serving it yourself. Pin the full version with its Subresource Integrity
-(**SRI**) hash:
+serving it yourself:
 
 ```html
-<script
-  src="https://cdn.straddle.com/surface/straddle-1.0.0.js"
-  integrity="sha384-..."
-  crossorigin="anonymous"
-></script>
+<script src="https://cdn.straddle.com/surface/straddle-v1.js"></script>
 ```
 
-Pinned files never change and are cached for a year. Each GitHub release lists
-the `sha384-` hashes of that version's `straddle-X.Y.Z.js` and
-`straddle-X.Y.Z.esm.js`.
+`straddle-v1.js` always serves the latest 1.x release and is cached for 5
+minutes, so your page gets fixes without a redeploy. There's no `latest`
+alias, so a page never moves to a new major version on its own. For `import`
+instead of a script tag, use `straddle-v1.esm.js`.
 
-To take every release of a major version without redeploying, use the major
-alias `straddle-v1.js`. It follows the latest 1.x release and is cached for 5
-minutes. Its content changes, so it can't carry an SRI hash. There's no
-`latest` alias, so a page never moves to a new major version on its own. For
-`import` instead of a script tag, use the ESM variants `straddle-1.0.0.esm.js`
-and `straddle-v1.esm.js`.
+To pin an exact version instead, load `straddle-X.Y.Z.js` or
+`straddle-X.Y.Z.esm.js` with its Subresource Integrity (**SRI**) hash in
+`integrity` and `crossorigin="anonymous"`. Pinned files never change and are
+cached for a year. Each GitHub release lists the `sha384-` hashes of
+`dist/straddle.js` and `dist/index.js`, which are byte for byte the CDN's
+`straddle-X.Y.Z.js` and `straddle-X.Y.Z.esm.js`. The alias's content changes,
+so it can't carry an SRI hash.
 
 ## Package layout
 

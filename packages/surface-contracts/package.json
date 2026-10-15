@@ -1,6 +1,6 @@
 {
   "name": "@straddlecom/surface-contracts",
-  "version": "0.4.1",
+  "version": "1.0.0",
   "description": "Internal to Straddle's SDKs, not for direct use. Per-surface init-option vocabularies shared by a Straddle element and the surface app it hosts.",
   "license": "Apache-2.0",
   "repository": {
