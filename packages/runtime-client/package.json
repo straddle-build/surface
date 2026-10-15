@@ -1,6 +1,6 @@
 {
   "name": "@straddlecom/runtime-client",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Internal to Straddle's SDKs, not for direct use. Parent-side surface runtime: iframe lifecycle and Web Component base.",
   "license": "Apache-2.0",
   "repository": {

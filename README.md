@@ -54,10 +54,22 @@ it can't carry an SRI hash.
 
 Take the following steps to connect a bank account in the sandbox:
 
-1. On your backend, create a Bridge session for the customer and pass its
-   token to your page. The
-   [Bridge guide](https://docs.straddle.com/guides/bridge/widget) shows the
-   request.
+1. On your backend, create a Bridge session for an existing
+   [customer](https://docs.straddle.com/api-reference/customers/create), and
+   pass the session's `client_secret` to your page as the token. The
+   `redirect_url` field is required and must be an absolute `https` URL. A
+   platform acting for one of its accounts also sends the
+   [`Straddle-Account-Id` header](https://docs.straddle.com/guides/embed/api-headers).
+
+   ```bash
+   curl -X POST https://sandbox.straddle.com/v1/bridge/sessions \
+     -H "Authorization: Bearer $STRADDLE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"customer_id": "CUSTOMER_ID", "redirect_url": "https://example.com/bank-return"}'
+   ```
+
+   The response carries the token in `data.client_secret`.
+
 2. Add the element with `mode="sandbox"` and the token:
 
    ```html
@@ -75,6 +87,9 @@ Take the following steps to connect a bank account in the sandbox:
      console.error(event.detail.code, event.detail.message)
    })
    ```
+
+   `event.detail.data` is the new paykey. Check its `status` before you
+   continue, and confirm the paykey on your server before you rely on it.
 
 4. When you go live, switch to `mode="production"` with a production session
    token.

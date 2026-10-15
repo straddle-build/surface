@@ -24,7 +24,7 @@ export interface StraddleBridgeAttributes {
    * dispatches `straddleerror` (`code: "INTERNAL"`) synchronously on connect and does not mount.
    */
   mode: StraddleMode
-  /** The `bridge_token` from `POST /v1/bridge/initialize`. */
+  /** The `client_secret` from `POST /v1/bridge/sessions`. */
   token?: string
   /**
    * Preferred bank OAuth navigation: `popup` (default) or `redirect`. Redirect
