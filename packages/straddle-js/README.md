@@ -16,11 +16,11 @@ Load the bundle, then use the element. It registers itself on load.
 ></straddle-bridge>
 ```
 
-| Attribute    | Required | Role                                                                                                                                                                                                                                                                             |
-| ------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mode`       | yes      | Which Straddle environment to connect to: `sandbox` while you integrate, `production` when you go live. Any other value, or omitting it, emits `straddleerror` (`code: "INTERNAL"`) and does not mount.                                                                          |
-| `token`      | no\*     | The session token, forwarded to the surface in `STRADDLE_INIT`: the `client_secret` from `POST /v1/bridge/sessions`, or the `bridge_token` from the legacy `POST /v1/bridge/initialize`. The return URL your backend supplied at session creation travels inside it (see below). |
-| `oauth-mode` | no       | Bank OAuth navigation: `popup` (the default when omitted) or `redirect`. Any other value emits `straddleerror` (`code: "INTERNAL"`) and does not mount. See "OAuth navigation" below.                                                                                            |
+| Attribute    | Required | Role                                                                                                                                                                                                         |
+| ------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `mode`       | yes      | Which Straddle environment to connect to: `sandbox` while you integrate, `production` when you go live. Any other value, or omitting it, emits `straddleerror` (`code: "INTERNAL"`) and does not mount.      |
+| `token`      | no\*     | The session token, forwarded to the surface in `STRADDLE_INIT`: the `client_secret` from `POST /v1/bridge/sessions`. The return URL your backend supplied at session creation travels inside it (see below). |
+| `oauth-mode` | no       | Bank OAuth navigation: `popup` (the default when omitted) or `redirect`. Any other value emits `straddleerror` (`code: "INTERNAL"`) and does not mount. See "OAuth navigation" below.                        |
 
 \* The host page's backend initializes the Bridge session and passes the token
 down; the element reads it via the base class's `resolveToken()`.
@@ -75,12 +75,13 @@ re-mounts `<straddle-bridge>` on the same top-level origin, in the same tab, so
 the surface app can resume the flow).
 
 `oauth-mode` is honored as configured. Some environments cannot open popups at
-all — in-app webviews on mobile, or a browser where the user has disabled
-them — and today a blocked popup surfaces as `straddleerror`; the surface app does
-not switch modes on its own. A popup-to-redirect fallback is planned but not
-yet shipped, so supplying a return URL when you create the session, even if you
-use popups, is recommended as future-proofing: sessions that already carry one
-will pick up the fallback without an integration change.
+all: in-app webviews on mobile, or a browser where the user has disabled them.
+When the browser blocks the popup, the Bridge app asks the customer, on screen,
+to allow popups and try again. Your page gets no `straddleerror`, and the
+surface app does not switch modes on its own. A popup-to-redirect fallback is
+planned but not yet shipped. `POST /v1/bridge/sessions` requires a
+`redirect_url`, an absolute `https` URL, even when you use popups, so every
+session already carries what that fallback needs.
 
 **The return URL is not a page attribute.** Your backend passes it as
 `redirect_url` when it creates the Bridge session, and the issuer binds it into
@@ -126,6 +127,14 @@ el.addEventListener('straddleerror', (e) => {
 })
 el.addEventListener('straddlecomplete', (e) => console.log(e.detail.data))
 ```
+
+For `<straddle-bridge>`, the `data` of `straddlecomplete` is the new paykey: the
+same object that `GET /v1/paykeys/{id}` returns in `data`, with `id`, `paykey`,
+`customer_id`, `status`, `status_details`, `bank_data`, and `balance`. Check
+`status` before you continue. An `active` paykey is ready for payments, and a
+paykey in `review` needs your approval first. The browser event tells your page
+that the customer finished, but it isn't proof on its own, so confirm the paykey
+on your server before you rely on it.
 
 The typing is scoped to the element (`StraddleBridgeEventMap`): the global
 `HTMLElementEventMap` is not augmented, so a listener on an ancestor still
@@ -255,8 +264,17 @@ It types `mode` (required, as `StraddleMode`), `token` and `oauth-mode`
 HTML props,
 and the `ref` resolves to `StraddleBridgeElement`. It requires `@types/react`
 and augments both `React.JSX` (React 18.2+/19) and the legacy global `JSX`
-namespace. Events are not JSX props — React does not bind listeners for custom
-events — so attach them via the ref, as above.
+namespace. The typings declare no event props, so attach listeners through the
+ref, as above. A ref's effect runs after React inserts the element, so it misses
+the `straddleerror` that an invalid `mode` or `oauth-mode` dispatches on
+connect. The typed props rule out both at compile time.
+
+Importing `@straddlecom/straddle-js` defines the element, which needs a
+browser. During server-side rendering the import throws
+`ReferenceError: HTMLElement is not defined`. In Next.js, Remix, or any
+framework that renders components on the server, load the package only in the
+browser, for example with `import('@straddlecom/straddle-js')` inside
+`useEffect`.
 
 The entry carries no behavior, so a `reference` is the intended way to enable
 it — but `import '@straddlecom/straddle-js/react'` is the first thing most

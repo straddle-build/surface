@@ -377,6 +377,28 @@ test('STRADDLE_INIT omits the options key when initOptions is undefined', async 
   expect((inits[0] as Envelope).payload).toEqual({ token: 'tok-bare' })
 })
 
+test('a token set the way React 19 sets custom element props reaches STRADDLE_INIT', async () => {
+  const el = new TestElement()
+  const setReactProp = (name: string, value: string) => {
+    if (name in el) (el as unknown as Record<string, string>)[name] = value
+    else el.setAttribute(name, value)
+  }
+  setReactProp('iframe-origin', IFRAME_ORIGIN)
+  setReactProp('token', 'tok-react')
+  document.body.appendChild(el)
+  await tick()
+  const iframe = el.querySelector('iframe') as HTMLIFrameElement
+  const sent: unknown[] = []
+  Object.defineProperty(iframe, 'contentWindow', {
+    configurable: true,
+    value: { postMessage: (message: unknown) => sent.push(message) },
+  })
+  deliver(envelope('STRADDLE_HELLO', el.getInstanceId(), {}))
+  const inits = sent.filter((m) => (m as Envelope).type === 'STRADDLE_INIT')
+  expect(inits).toHaveLength(1)
+  expect((inits[0] as Envelope).payload).toMatchObject({ token: 'tok-react' })
+})
+
 test('two HELLOs each elicit an INIT (idempotent ack)', async () => {
   const { sent, id } = await mount()
   deliver(envelope('STRADDLE_HELLO', id, {}))

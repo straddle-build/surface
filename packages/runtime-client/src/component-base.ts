@@ -89,7 +89,7 @@ export abstract class StraddleComponentElement<
   protected readonly instanceId: string = crypto.randomUUID()
   private handle: IframeHandle | null = null
   private listener: ((event: MessageEvent) => void) | null = null
-  private token = ''
+  #token = ''
   private ready = false
   private mountTimeout: ReturnType<typeof setTimeout> | null = null
   private versionMismatchReported = false
@@ -247,7 +247,7 @@ export abstract class StraddleComponentElement<
   }
 
   private mount(token: string): void {
-    this.token = token
+    this.#token = token
 
     // Ordering invariant: token field set → listener registered → iframe
     // appended. A HELLO arriving the instant the app boots then always finds the
@@ -340,7 +340,7 @@ export abstract class StraddleComponentElement<
     if (!win) return
     const options = this.initOptions
     send(win, this.iframeOrigin, 'STRADDLE_INIT', this.instanceId, {
-      token: this.token,
+      token: this.#token,
       ...(options === undefined ? {} : { options }),
     })
   }
