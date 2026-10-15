@@ -7,8 +7,8 @@ the iframe).
 > **Internal package.** Internal to Straddle's SDKs and not for direct use.
 > Integrate with [`@straddlecom/straddle-js`](../straddle-js) instead. It
 > publishes `restricted` with `0.x` versioning, and
-> [`@straddlecom/runtime-client`](../runtime-client) and
-> [`@straddlecom/runtime-surface`](../runtime-surface) depend on it.
+> [`@straddlecom/runtime-client`](../runtime-client) and the iframe-side
+> runtime in Straddle's hosted apps depend on it.
 
 ## What's here
 

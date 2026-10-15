@@ -1,32 +1,34 @@
 # straddle-js demo
 
-Consumes the real `straddle.js` IIFE exactly as a partner would: a `<script>`
-tag plus a declarative `<straddle-bridge>` element, against a stub bridge
-surface on a second origin.
+Loads `straddle.js` the way a partner's page does: a `<script>` tag, a
+`<straddle-bridge>` element in `sandbox` mode, and listeners for its four
+events. The page serves the same bundle that's published to npm, built from
+`packages/straddle-js`.
+
+## Run it
+
+From the repo root:
 
 ```bash
-bun run dev:straddle-js   # from the repo root
+bun install
+bun run dev:straddle-js
 ```
 
-Open http://localhost:5373. The host page (5373) loads `/straddle.js` (bundled
-in memory from `packages/straddle-js`) and mounts
-`<straddle-bridge iframe-origin="http://localhost:5374" token="dev-token-abc">`.
-`iframe-origin` is the development override that stands in for `mode`.
-The demo serves a dev build of `straddle.js`, which honors it; published builds
-ignore it. It lets the demo target the stub surface on :5374. The element
-mounts its iframe at `http://localhost:5374/bridge#sid=<id>` — the
-surface is served only at `/bridge`; the origin root 404s so a wrong-path
-regression is loud.
+Open http://localhost:5373, paste a sandbox session token, and click
+**Mount**. The token is the `client_secret` your backend gets from
+`POST /v1/bridge/sessions` with your sandbox API key. See
+[docs.straddle.com](https://docs.straddle.com) for creating a session.
 
-The stub surface completes the handshake via `createSurfaceRuntime`
-(STRADDLE_HELLO → INIT → READY), then its three buttons drive
-`straddlecomplete` / `straddleexit` / `straddleerror`, all appended to the
-host page's lifecycle log along with `straddleready`.
+The element connects to Straddle's sandbox and logs each event it dispatches:
 
-Manual error path: remove the `iframe-origin` attribute from `host.html` and
-reload — with no `mode` either, the element immediately logs `straddleerror`
-(`code: "INTERNAL"`, `straddle-bridge requires a "mode" attribute`) and never
-mounts the iframe.
+| Event              | When                                        |
+| ------------------ | ------------------------------------------- |
+| `straddleready`    | The Bridge surface finished loading.        |
+| `straddlecomplete` | The user finished the flow.                 |
+| `straddleexit`     | The user left the flow.                     |
+| `straddleerror`    | Something failed, such as an invalid token. |
 
-`build.ts` is the CI compile guard: it bundles `surface.ts` and the real
-`straddle.js` without writing to disk.
+A sandbox token only works with `mode="sandbox"`.
+
+`build.ts` is the CI compile check: it builds `straddle.js` exactly as
+published, into a temporary directory.

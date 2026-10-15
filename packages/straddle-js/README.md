@@ -134,9 +134,8 @@ receives a plain `Event` and narrows it itself. See
 
 ### The surface side
 
-The page served at the surface origin's `/bridge` route must run
-`createSurfaceRuntime` from [`@straddlecom/runtime-surface`](../runtime-surface)
-at boot. The element never messages first; a surface that doesn't announce itself gets no
+The page served at the surface origin's `/bridge` route is Straddle's hosted
+Bridge app, which starts the handshake at boot. The element never messages first; a surface that doesn't announce itself gets no
 `STRADDLE_INIT`, and after 10s the element dispatches `straddleerror`
 (`code: "INTERNAL"`, "surface did not become ready").
 

@@ -6,7 +6,7 @@ Surface is Straddle's browser SDK: Web Components that mount Straddle's hosted
 apps, called surfaces, in an iframe on a partner's page. This repository is
 public, and partners consume its published packages.
 
-It's a Bun workspace monorepo with five packages:
+It's a Bun workspace monorepo with four packages:
 
 - `packages/straddle-js`, `@straddlecom/straddle-js`: the partner-facing
   package. Ships `<straddle-bridge>` as a standalone self-registering IIFE
@@ -22,17 +22,14 @@ It's a Bun workspace monorepo with five packages:
 - `packages/runtime-client`, `@straddlecom/runtime-client`: the page side.
   `StraddleComponentElement` (origin selection from `mode`, iframe mount,
   handshake, resize, and DOM events) and `mountIframe`.
-- `packages/runtime-surface`, `@straddlecom/runtime-surface`: the iframe side.
-  `createSurfaceRuntime` runs the handshake for the app inside the iframe, and
-  `readInitOption` validates enum-like init options.
 - `packages/surface-contracts`, `@straddlecom/surface-contracts`: the
   init-option vocabulary of each surface, one subpath per surface (`./bridge`)
   and no root entry. Types and const arrays only.
 
-The four runtime and contract packages are internal to Straddle's SDKs and
-publish `restricted`. Both runtime packages take a `TOptions` type parameter
-for the surface-defined init options and never import surface-contracts
-themselves; only concrete elements and surface apps do.
+The three runtime and contract packages are internal to Straddle's SDKs.
+runtime-client takes a `TOptions` type parameter for the surface-defined init
+options and never imports surface-contracts itself; only concrete elements and
+surface apps do.
 
 ## Commands
 
@@ -50,9 +47,6 @@ bun run test
 
 # Build straddle-js's publishable dist (IIFE + ESM)
 bun run --filter '@straddlecom/straddle-js' build
-
-# Run the embedded-iframe demo (a component subclass and a stub surface)
-bun run dev:examples
 
 # Run the straddle-js demo (the straddle.js bundle as a partner loads it)
 bun run dev:straddle-js
@@ -100,16 +94,27 @@ the constant undefined and honor the override.
 
 ## Publishing
 
-Releases are automated with release-please and GitHub Actions:
+straddle-js is the only package this repository publishes today:
 
-- Conventional commits on `main` drive per-package version bumps
-  (`release-please-config.json`, `.release-please-manifest.json`). Merging a
-  release PR is the human gate: it tags a GitHub release, which publishes the
-  released packages.
-- `publish.yml` reruns format, typecheck, and test, then runs `npm publish`
-  with npm trusted publishing (OIDC, no token secret). npm validates the run's
-  top-level workflow, `release-please.yml`, so manual runs of `publish.yml`
-  can only dry-run.
+- Versions are set before code reaches this repository. Each release arrives
+  as a PR titled with the packages it releases, such as
+  `Release straddle-js 1.0.0`, and merging it is the human gate. Only stable
+  versions are released here: `publish-package.yml` refuses a prerelease such
+  as `1.1.0-preview.0`.
+- On each push to `main`, `publish.yml` runs `publish-package.yml` for each
+  package in its `package` matrix, which publishes the package when its
+  version isn't on npm yet. The `build` job reruns format, typecheck, and test
+  and packs the tarball without npm credentials. The `publish` job runs
+  `npm publish` on that tarball with npm trusted publishing (OIDC, no token
+  secret), in an `npm` environment that only accepts `main`. The `release` job
+  tags `<package>-vX.Y.Z`, such as `straddle-js-v1.0.0`, and lists the SHA-384
+  SRI hash of each `dist/*.js` file on the GitHub release.
+- To publish another package from here, add its directory to that matrix and
+  register its npm trusted publisher (`publish.yml`, `npm` environment). npm
+  can only attach a trusted publisher to a package that already exists, so a
+  new package's first version is published by hand.
+- runtime-core, runtime-client, and surface-contracts are published to npm as
+  `restricted` packages, outside this repository.
 - No `dist/` is ever committed, and dev flows never need one. The runtime
   packages export raw `src/` and depend on each other with `workspace:`
   ranges. Before publishing, `scripts/publish-manifest.ts strip` rewrites each
@@ -133,20 +138,16 @@ Releases are automated with release-please and GitHub Actions:
 @straddlecom/runtime-client (page side)
   └─ depends on @straddlecom/runtime-core
 
-@straddlecom/runtime-surface (iframe side)
-  └─ depends on @straddlecom/runtime-core
-
 @straddlecom/surface-contracts (per-surface init options)
   └─ no dependencies
 ```
 
-Straddle's hosted surface apps run `@straddlecom/runtime-surface` inside the
-iframe and share `@straddlecom/surface-contracts` with the elements, so a
-vocabulary change fails both builds instead of drifting on the wire.
+Straddle's hosted surface apps run the iframe side of the protocol and share
+`@straddlecom/surface-contracts` with the elements, so a vocabulary change fails
+both builds instead of drifting on the wire.
 
-`examples/embedded-iframe` (a `StraddleComponentElement` subclass and a stub
-surface) and `examples/straddle-js` (the `straddle.js` bundle as a partner
-loads it) are runnable demos. CI type-checks and bundles both.
+`examples/straddle-js` (the `straddle.js` bundle as a partner loads it) is a
+runnable demo. CI type-checks it and builds `straddle.js` as published.
 
 ## Maintaining this file
 
