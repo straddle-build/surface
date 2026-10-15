@@ -13,18 +13,18 @@
     },
     "packages/runtime-client": {
       "name": "@straddlecom/runtime-client",
-      "version": "0.2.2",
+      "version": "1.0.0",
       "dependencies": {
         "@straddlecom/runtime-core": "workspace:^",
       },
     },
     "packages/runtime-core": {
       "name": "@straddlecom/runtime-core",
-      "version": "0.2.1",
+      "version": "1.0.0",
     },
     "packages/straddle-js": {
       "name": "@straddlecom/straddle-js",
-      "version": "0.3.2",
+      "version": "1.0.0",
       "devDependencies": {
         "@straddlecom/runtime-client": "workspace:*",
         "@straddlecom/runtime-core": "workspace:*",
@@ -34,7 +34,7 @@
     },
     "packages/surface-contracts": {
       "name": "@straddlecom/surface-contracts",
-      "version": "0.4.1",
+      "version": "1.0.0",
     },
   },
   "packages": {

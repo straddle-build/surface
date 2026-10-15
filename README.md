@@ -32,23 +32,16 @@ Then import it once. The import registers `<straddle-bridge>`:
 import '@straddlecom/straddle-js'
 ```
 
-Or load the bundle from Straddle's CDN with a pinned version and its
-Subresource Integrity (**SRI**) hash:
+Or load the bundle from Straddle's CDN:
 
 ```html
-<script
-  src="https://cdn.straddle.com/surface/straddle-1.0.0.js"
-  integrity="sha384-..."
-  crossorigin="anonymous"
-></script>
+<script src="https://cdn.straddle.com/surface/straddle-v1.js"></script>
 ```
 
-Each release lists the `sha384-` hash of `straddle-X.Y.Z.js` and
-`straddle-X.Y.Z.esm.js` on its GitHub release page. Pinned files never change
-and are cached for a year. To take every 1.x release without redeploying, load
-`https://cdn.straddle.com/surface/straddle-v1.js` instead. It follows the
-latest 1.x release and is cached for 5 minutes. Because its content changes,
-it can't carry an SRI hash.
+`straddle-v1.js` always serves the latest 1.x release, so your page gets fixes
+without a redeploy, and it never moves to a new major version on its own. To
+pin an exact version with a Subresource Integrity (**SRI**) hash, see
+[Loading from the CDN](packages/straddle-js/README.md#loading-from-the-cdn).
 
 ## Quickstart
 
